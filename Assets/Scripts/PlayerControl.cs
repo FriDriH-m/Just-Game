@@ -1,7 +1,8 @@
+using UnityEditor.ShaderGraph;
 using UnityEngine;
-interface ICameraMove
+public interface ICameraMove
 {
-    void CameraMove(Vector2 move);
+    void CameraMove();
 }
 public class CameraMoving : ICameraMove
 {
@@ -10,40 +11,44 @@ public class CameraMoving : ICameraMove
     private readonly float _speed;
     private float _xRotation;
     private float _yRotation;
+    private Vector2 _cameraMove;
 
-    public CameraMoving(Camera camera, Transform playerTransform, float speed)
+    public CameraMoving(Camera camera, Transform playerTransform, float speed, InputSystem_Actions inputSystem)
     {
         _camera = camera;
         _playerTransform = playerTransform;
         _speed = speed;
+        _cameraMove = inputSystem.Player.Look.ReadValue<Vector2>();
     }
-    public void CameraMove(Vector2 move)
+    public void CameraMove()
     {
-        _xRotation -= move.y * _speed;
+        _xRotation -= _cameraMove.y * _speed;
         _xRotation = Mathf.Clamp(_xRotation, -80f, 80f);
 
-        _yRotation += move.x * _speed;
+        _yRotation += _cameraMove.x * _speed;
 
         _camera.transform.localRotation = Quaternion.Euler(_xRotation, 0, 0);
         _playerTransform.rotation = Quaternion.Euler(0, _yRotation, 0);
     }
 }
-interface IPlayerMove
+public interface IPlayerMove
 {
-    void OnMove(Vector2 move);
+    void OnMove();
 }
 public class PlayerMoving : IPlayerMove
 {    
     private readonly Rigidbody _rigidbody;
     private readonly float _speed;
-    public PlayerMoving(Rigidbody rigidbody, float speed)
+    private Vector2 _move;
+    public PlayerMoving(Rigidbody rigidbody, float speed, InputSystem_Actions inputSystem)
     {
         _rigidbody = rigidbody;
         _speed = speed;
+        _move = inputSystem.Player.Move.ReadValue<Vector2>();
     }
-    public void OnMove(Vector2 move)
+    public void OnMove()
     {
-        Vector3 movement = new Vector3(move.x, 0, move.y);
+        Vector3 movement = new Vector3(_move.x, 0, _move.y);
         _rigidbody.AddRelativeForce(movement * _speed, ForceMode.Impulse);
     }
 }
@@ -51,29 +56,16 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] float _speed = 5f;
     [SerializeField] float _lookSpeed = 0.5f;
-    private InputSystem_Actions _control;
     private IPlayerMove _playerMoving;
-    private ICameraMove _cameraMoving;
-    
-    private void Awake()
+    private ICameraMove _cameraMoving;   
+    public void Init(IPlayerMove playerMove, ICameraMove cameraMove)
     {
-        _control = new InputSystem_Actions();
-        _playerMoving = new PlayerMoving(GetComponent<Rigidbody>(), _speed);
-        _cameraMoving = new CameraMoving(Camera.main, transform, _lookSpeed);
-    }
-    private void OnEnable()
-    {
-        _control.Enable();
-    }
-    private void OnDisable()
-    {
-        _control.Disable();
+        _playerMoving = playerMove;
+        _cameraMoving = cameraMove;
     }
     void Update()
     {
-        Vector2 move = _control.Player.Move.ReadValue<Vector2>();
-        Vector2 cameraMove = _control.Player.Look.ReadValue<Vector2>();
-        _playerMoving.OnMove(move);
-        _cameraMoving.CameraMove(cameraMove);
+        _playerMoving.OnMove();
+        _cameraMoving.CameraMove();
     }
 }
