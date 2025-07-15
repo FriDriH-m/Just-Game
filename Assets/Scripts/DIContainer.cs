@@ -54,28 +54,13 @@ public class DIContainer
     private object CreateInstance(Type type) // метод, который создает инстанс объекта
     {
         var _constructor = type.GetConstructors().First();
-        if (_constructor == null)
-        {
-            var method = type.GetMethod("Init");
-            var parameters = method.GetParameters();
-            var argumentsOfMethod = new object[parameters.Length];
+        var _parameters = _constructor.GetParameters();
+        var argumentsOfConstructor = new object[_parameters.Length];
 
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                argumentsOfMethod[i] = Resolve(parameters[i].ParameterType);
-            }
-            return _constructor.Invoke(argumentsOfMethod);
+        for (int i = 0; i < _parameters.Length; i++)
+        {
+            argumentsOfConstructor[i] = Resolve(_parameters[i].ParameterType);
         }
-        else
-        {
-            var _parameters = _constructor.GetParameters();
-            var argumentsOfConstructor = new object[_parameters.Length];
-
-            for (int i = 0; i < _parameters.Length; i++)
-            {
-                argumentsOfConstructor[i] = Resolve(_parameters[i].ParameterType);
-            }
-            return _constructor.Invoke(argumentsOfConstructor);
-        }       
+        return _constructor.Invoke(argumentsOfConstructor);
     }    
 }
