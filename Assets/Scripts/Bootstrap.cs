@@ -14,10 +14,12 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] float _speed = 5f;
     [SerializeField] float _lookSpeed = 0.5f;
+    private CharacterController _controller;
 
     private void Awake()
     {
         _playerControl = _player.GetComponent<PlayerControl>();
+        _controller = _player.GetComponent<CharacterController>();
         _inputSystem = new InputSystem_Actions();
 
         _sounds = GetComponent<Sounds>();
@@ -28,7 +30,7 @@ public class Bootstrap : MonoBehaviour
 
         _particleSystem.Initialize(_inputSystem, _sounds);
         _cameraMoving = new CameraMoving(_mainCamera, _player.transform, _lookSpeed, _inputSystem);
-        _playerMoving = new PlayerMoving(_playerRigidbody, _speed, _inputSystem, _mainCamera);
+        _playerMoving = new PlayerMoving(_playerRigidbody, _speed, _inputSystem, _mainCamera, _controller, _player);
         _playerControl.Init(_playerMoving, _cameraMoving);
     }
 }

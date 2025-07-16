@@ -37,6 +37,7 @@ public class CameraMoving : ICameraMove
 public interface IPlayerMove
 {
     void OnMove();
+    void Jump(float force);
 }
 public class PlayerMoving : IPlayerMove
 {    
@@ -46,24 +47,42 @@ public class PlayerMoving : IPlayerMove
     private Vector2 _move;
     private readonly Camera _camera;
     InputSystem_Actions _inputSystem;
-    public PlayerMoving(Rigidbody rigidbody, float speed, InputSystem_Actions inputSystem, Camera camera)
+    private CharacterController _controller;
+    private GameObject _player;
+    public PlayerMoving(Rigidbody rigidbody, float speed, InputSystem_Actions inputSystem, Camera camera, CharacterController controller, GameObject player)
     {
+        _player = player;
         _rigidbody = rigidbody;
         _speed = speed;
         _inputSystem = inputSystem;
         _camera = camera;
+        _controller = controller;
     }
     public void OnMove()
-    {
-        _camera.fieldOfView = _fieldOfView + _rigidbody.linearVelocity.magnitude * 2;
+    {        
+        //_camera.fieldOfView = _fieldOfView + _rigidbody.linearVelocity.magnitude * 2;
         _move = _inputSystem.Player.Move.ReadValue<Vector2>();
-        Vector3 movement = new Vector3(_move.x, 0, _move.y);
-        _rigidbody.AddRelativeForce(movement * _speed, ForceMode.Impulse);
+
+        Vector3 movement = new Vector3(_move.x, 0, _move.y) * Time.deltaTime * _speed;
+        movement = Vector3.ClampMagnitude(movement, 2f);
+        movement = _player.transform.TransformDirection(movement);
+
+        _controller.Move(movement);
+        //Debug.Log(_rigidbody.linearVelocity.magnitude);
+    }
+    public void Jump(float force)
+    {
+        if (_inputSystem.Player.Jump.triggered)
+        {
+            
+            Debug.Log("Jump");
+            _rigidbody.AddForce(Vector3.up * force, ForceMode.Impulse);
+        }
     }
 }
 public class PlayerControl : MonoBehaviour
 {
-    
+    [SerializeField] private float _jumpForce = 50f;
     private IPlayerMove _playerMoving;
     private ICameraMove _cameraMoving;   
     public void Init(IPlayerMove playerMove, ICameraMove cameraMove)
@@ -74,6 +93,7 @@ public class PlayerControl : MonoBehaviour
     void Update()
     {
         _playerMoving.OnMove();
+        _playerMoving.Jump(_jumpForce);
         _cameraMoving.CameraMove();
     }
 }
