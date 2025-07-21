@@ -35,6 +35,8 @@ public class WeaponParticleSystem : MonoBehaviour
     }
     private IEnumerator Shoot()
     {
+        Debug.Log(_spawnPoint.transform.rotation.y);
+        _spawnedEffect.transform.rotation = Quaternion.Euler(Random.Range(0, 180), Quaternion.identity.y, 0);
         _spawnedEffect.SetActive(true);
         _sounds.PlaySound(0);
         yield return new WaitForSeconds(0.11f);

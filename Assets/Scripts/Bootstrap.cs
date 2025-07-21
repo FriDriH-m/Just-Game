@@ -30,7 +30,7 @@ public class Bootstrap : MonoBehaviour
 
         _particleSystem.Initialize(_inputSystem, _sounds);
         _cameraMoving = new CameraMoving(_mainCamera, _player.transform, _lookSpeed, _inputSystem);
-        _playerMoving = new PlayerMoving(_playerRigidbody, _speed, _inputSystem, _mainCamera, _controller, _player);
+        _playerMoving = new PlayerMoving(_speed, _inputSystem, _mainCamera, _controller, _player);
         _playerControl.Init(_playerMoving, _cameraMoving);
     }
 }
