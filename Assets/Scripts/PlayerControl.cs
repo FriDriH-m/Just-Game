@@ -98,9 +98,18 @@ public class PlayerMoving : IPlayerMove
     }
     public IEnumerator Jumping()
     {
-        for (int i = 0; i < 30; i++)
+        float smoothing = 0f;
+        for (int i = 0; i < 50; i++)
         {
-            _controller.Move(Vector3.up * force * Time.deltaTime);
+            _controller.Move(Vector3.up * (force - smoothing) * Time.deltaTime);
+            smoothing += 0.2f;
+            yield return new WaitForSeconds(0.01f);
+        }
+        smoothing = 8f;
+        for (int i = 0; i < 40; i++)
+        {
+            _controller.Move(-(Vector3.up * (force - smoothing) * Time.deltaTime));
+            smoothing -= 0.2f;
             yield return new WaitForSeconds(0.01f);
         }
         _isJumping = false;
@@ -109,7 +118,6 @@ public class PlayerMoving : IPlayerMove
 }
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] private float _jumpForce = 50f;
     private IPlayerMove _playerMoving;
     private ICameraMove _cameraMoving;   
     public void Init(IPlayerMove playerMove, ICameraMove cameraMove)

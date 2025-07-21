@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class WeaponParticleSystem : MonoBehaviour
 {
-    InputSystem_Actions _inputSystem;
-    GameObject _spawnedEffect;
-    Sounds _sounds;
-    Coroutine _shootCoroutine;
+    private InputSystem_Actions _inputSystem;
+    private GameObject _spawnedEffect;
+    private Sounds _sounds;
+    private Coroutine _shootCoroutine;
+    private Vector3 _spawnPointLclRot;
     [SerializeField] private GameObject _effects;
     [SerializeField] private Transform _spawnPoint;
 
@@ -19,14 +20,17 @@ public class WeaponParticleSystem : MonoBehaviour
 
     private void Start()
     {
+        _spawnPointLclRot = _spawnPoint.localRotation.eulerAngles;
         _spawnedEffect = Instantiate(_effects, _spawnPoint.position, _spawnPoint.rotation, _spawnPoint);
         _spawnedEffect.SetActive(false);
     }
 
     private void Update()
     {
+        
         if (_inputSystem.Player.Attack.ReadValue<float>() > 0)
         {
+            
             if (_shootCoroutine == null)
             {
                 _shootCoroutine = StartCoroutine(Shoot());
@@ -35,10 +39,10 @@ public class WeaponParticleSystem : MonoBehaviour
     }
     private IEnumerator Shoot()
     {
-        Debug.Log(_spawnPoint.transform.rotation.y);
-        _spawnedEffect.transform.rotation = Quaternion.Euler(Random.Range(0, 180), Quaternion.identity.y, 0);
+        _spawnPoint.transform.localRotation = Quaternion.Euler(Random.Range(0, 180), _spawnPointLclRot.y, _spawnPointLclRot.z);
         _spawnedEffect.SetActive(true);
         _sounds.PlaySound(0);
+        Debug.Log(_spawnedEffect.transform.rotation.eulerAngles);
         yield return new WaitForSeconds(0.11f);
         _spawnedEffect.SetActive(false);
         _shootCoroutine = null;
