@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 public interface ICameraMove
 {
     void CameraMove();
@@ -22,7 +22,7 @@ public class CameraMoving : ICameraMove
         _inputSystem = inputSystem;
     }
     public void CameraMove()
-    {        
+    {
         _cameraMove = _inputSystem.Player.Look.ReadValue<Vector2>();
         _xRotation -= _cameraMove.y * _speed;
         _xRotation = Mathf.Clamp(_xRotation, -80f, 80f);
@@ -43,14 +43,19 @@ public class PlayerMoving : IPlayerMove
 {
     private MonoBehaviour _playerControl;
     private readonly float _speed;
-    private float _fieldOfView = 60;
+    private float _rawFieldOfView = 60;
+    private float fieldOfView
+    {
+        get => _rawFieldOfView;
+        set => _rawFieldOfView = Mathf.Clamp(value, 60f, 80f);
+    }
     private Vector2 _move;
     private readonly Camera _camera;
-    InputSystem_Actions _inputSystem;
+    private InputSystem_Actions _inputSystem;
     private CharacterController _controller;
     private GameObject _player;
     private bool _isGrounded;
-    private float force = 10f;
+    private float force = 20f;
     private bool _isJumping = false;
     public PlayerMoving(float speed, InputSystem_Actions inputSystem, Camera camera, CharacterController controller, GameObject player)
     {
@@ -61,16 +66,17 @@ public class PlayerMoving : IPlayerMove
         _controller = controller;
     }
 
+
     public void OnMove()
     {
-        _move = _inputSystem.Player.Move.ReadValue<Vector2>();     
-        if (_move.magnitude != 0 )
+        _move = _inputSystem.Player.Move.ReadValue<Vector2>();
+        if (_move.magnitude != 0)
         {
-            _fieldOfView += Time.deltaTime * 100f;
-        } else _fieldOfView -= Time.deltaTime * 100f;
-        _fieldOfView = Mathf.Clamp(_fieldOfView, 60f, 75f);
+            fieldOfView += Time.deltaTime * 100f;
+        }
+        else fieldOfView -= Time.deltaTime * 100f;
 
-        _camera.fieldOfView = _fieldOfView;
+        _camera.fieldOfView = fieldOfView;
 
         Vector3 movement = new Vector3(_move.x, 0, _move.y) * Time.deltaTime * _speed;
         movement = Vector3.ClampMagnitude(movement, 2f);
@@ -78,6 +84,7 @@ public class PlayerMoving : IPlayerMove
 
         _controller.Move(movement);
     }
+
     public void Gravity()
     {
         if (!_isGrounded && !_isJumping)
@@ -87,6 +94,7 @@ public class PlayerMoving : IPlayerMove
             _isGrounded = _controller.isGrounded;
         }
     }
+
     public void Jump(MonoBehaviour _playerControl)
     {
         if (_isGrounded && _inputSystem.Player.Jump.triggered)
@@ -96,20 +104,21 @@ public class PlayerMoving : IPlayerMove
             _isGrounded = _controller.isGrounded;
         }
     }
+
     public IEnumerator Jumping()
     {
         float smoothing = 0f;
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < 30; i++)
         {
             _controller.Move(Vector3.up * (force - smoothing) * Time.deltaTime);
-            smoothing += 0.2f;
+            smoothing += 0.7f;
             yield return new WaitForSeconds(0.01f);
         }
-        smoothing = 8f;
+        smoothing = 16f;
         for (int i = 0; i < 40; i++)
         {
             _controller.Move(-(Vector3.up * (force - smoothing) * Time.deltaTime));
-            smoothing -= 0.2f;
+            smoothing -= 0.4f;
             yield return new WaitForSeconds(0.01f);
         }
         _isJumping = false;
@@ -118,18 +127,12 @@ public class PlayerMoving : IPlayerMove
 }
 public class PlayerControl : MonoBehaviour
 {
-    private IPlayerMove _playerMoving;
-    private ICameraMove _cameraMoving;   
-    public void Init(IPlayerMove playerMove, ICameraMove cameraMove)
+    ICameraMove cameraMove;
+    IPlayerMove playerMove;
+
+    public void Init(ICameraMove cameraMove, IPlayerMove playerMove)
     {
-        _playerMoving = playerMove;
-        _cameraMoving = cameraMove;
-    }
-    void Update()
-    {
-        _playerMoving.Gravity();
-        _playerMoving.OnMove();
-        _playerMoving.Jump(this);
-        _cameraMoving.CameraMove();
+        this.cameraMove = cameraMove;
+        this.playerMove = playerMove;
     }
 }
