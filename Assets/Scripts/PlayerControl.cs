@@ -4,6 +4,12 @@ public interface ICameraMove
 {
     void CameraMove();
 }
+public interface IPlayerMove
+{
+    void OnMove();
+    void Jump(MonoBehaviour _playerControl);
+    void Gravity();
+}
 public class CameraMoving : ICameraMove
 {
     private readonly Camera _camera;
@@ -33,34 +39,23 @@ public class CameraMoving : ICameraMove
         _playerTransform.rotation = Quaternion.Euler(0, _yRotation, 0);
     }
 }
-public interface IPlayerMove
-{
-    void OnMove();
-    void Jump(MonoBehaviour _playerControl);
-    void Gravity();
-}
+
 public class PlayerMoving : IPlayerMove
 {
-    private MonoBehaviour _playerControl;
-    private readonly float _speed;
-    private float _rawFieldOfView = 60;
-    private float fieldOfView
-    {
-        get => _rawFieldOfView;
-        set => _rawFieldOfView = Mathf.Clamp(value, 60f, 80f);
-    }
+    private readonly float _speed = 12;
     private Vector2 _move;
     private readonly Camera _camera;
     private InputSystem_Actions _inputSystem;
     private CharacterController _controller;
+    private FOVControl _fovControl;
     private GameObject _player;
     private bool _isGrounded;
-    private float force = 20f;
+    private float force = 30f;
     private bool _isJumping = false;
-    public PlayerMoving(float speed, InputSystem_Actions inputSystem, Camera camera, CharacterController controller, GameObject player)
+    public PlayerMoving(InputSystem_Actions inputSystem, Camera camera, CharacterController controller, GameObject player, FOVControl fovControl)
     {
+        _fovControl = fovControl;
         _player = player;
-        _speed = speed;
         _inputSystem = inputSystem;
         _camera = camera;
         _controller = controller;
@@ -69,15 +64,12 @@ public class PlayerMoving : IPlayerMove
 
     public void OnMove()
     {
+        _isGrounded = _controller.isGrounded;
         _move = _inputSystem.Player.Move.ReadValue<Vector2>();
-        if (_move.magnitude != 0)
+        if(_move.magnitude > 0.5f )
         {
-            fieldOfView += Time.deltaTime * 100f;
-        }
-        else fieldOfView -= Time.deltaTime * 100f;
-
-        _camera.fieldOfView = fieldOfView;
-
+            _fovControl.SetTargetFOW("Running");
+        } else _fovControl.SetTargetFOW("Default");
         Vector3 movement = new Vector3(_move.x, 0, _move.y) * Time.deltaTime * _speed;
         movement = Vector3.ClampMagnitude(movement, 2f);
         movement = _player.transform.TransformDirection(movement);
@@ -87,42 +79,33 @@ public class PlayerMoving : IPlayerMove
 
     public void Gravity()
     {
-        if (!_isGrounded && !_isJumping)
+        if (!_isJumping)
         {
             Vector3 gravity = new Vector3(0, -9.81f, 0) * Time.deltaTime;
             _controller.Move(gravity);
-            _isGrounded = _controller.isGrounded;
         }
     }
 
     public void Jump(MonoBehaviour _playerControl)
     {
-        if (_isGrounded && _inputSystem.Player.Jump.triggered)
+        if (_inputSystem.Player.Jump.triggered && !_isJumping)
         {
             _isJumping = true;
             _playerControl.StartCoroutine(Jumping());
-            _isGrounded = _controller.isGrounded;
         }
     }
 
     public IEnumerator Jumping()
     {
         float smoothing = 0f;
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < force * 2; i++)
         {
             _controller.Move(Vector3.up * (force - smoothing) * Time.deltaTime);
-            smoothing += 0.7f;
-            yield return new WaitForSeconds(0.01f);
-        }
-        smoothing = 16f;
-        for (int i = 0; i < 40; i++)
-        {
-            _controller.Move(-(Vector3.up * (force - smoothing) * Time.deltaTime));
-            smoothing -= 0.4f;
+            smoothing += 1f;
             yield return new WaitForSeconds(0.01f);
         }
         _isJumping = false;
-        yield return null;
+        yield break;
     }
 }
 public class PlayerControl : MonoBehaviour
