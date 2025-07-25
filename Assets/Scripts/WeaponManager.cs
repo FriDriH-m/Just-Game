@@ -92,7 +92,7 @@ public class WeaponManager : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, 50f))
         {
-            _poolObjects.ActivePool(hit.point, Quaternion.LookRotation(ray.direction, hit.normal));
+            _poolObjects.ActivePool(ray, hit);
         }
     }
     private IEnumerator Shooting()
