@@ -6,38 +6,34 @@ public class WeaponManager : MonoBehaviour
 {    
     [SerializeField] private Transform _aimPoint;
     [SerializeField] private GameObject _effects;
-    [SerializeField] private Transform _spawnPoint;
-    [SerializeField] private float _aimSpeed;
+    [SerializeField] private Transform _effectSpawnPoint;
+    [SerializeField] private Transform _shootPoint;
     [SerializeField] private Animator _animator;
     [SerializeField] private TextMeshProUGUI _textMesh;
 
-    private int _ammo;
+    private PoolObjects _poolObjects;    
     private BaseState _currentState;
     private PlayerInputObserver _inputObserver;
-    private InputSystem_Actions _inputSystem;
     private Sounds _sounds;
     public FOVControl _fovControl { get; private set; }
 
-    private GameObject _spawnedEffect;    
-    private Camera _camera;
+    private GameObject _spawnedEffect;   
     private Vector3 _spawnPointLclRot;
-    private Vector3 _startWpnPos;
     private Coroutine _shootCoroutine;
+    private int _ammo;
 
     private Idle _idle = new();
     private Shooting _shooting = new();
     private Reloading _reloading = new();
     
-    public void Init(PlayerInputObserver inpputObserver, InputSystem_Actions inputSystem, Sounds sounds, Camera camera, FOVControl fovControl)
+    public void Init(PlayerInputObserver inpputObserver, Sounds sounds, FOVControl fovControl, PoolObjects poolObjects)
     {
+        _poolObjects = poolObjects;
         _fovControl = fovControl;
         _inputObserver = inpputObserver;
-        _camera = camera;
         _sounds = sounds;
-        _inputSystem = inputSystem;
-        _startWpnPos = transform.localPosition;
-        _spawnPointLclRot = _spawnPoint.localRotation.eulerAngles;
-        _spawnedEffect = Instantiate(_effects, _spawnPoint.position, _spawnPoint.rotation, _spawnPoint);
+        _spawnPointLclRot = _effectSpawnPoint.localRotation.eulerAngles;
+        _spawnedEffect = Instantiate(_effects, _effectSpawnPoint.position, _effectSpawnPoint.rotation, _effectSpawnPoint);
         _spawnedEffect.SetActive(false);
         _currentState = _idle;
         _ammo = 30;
@@ -51,11 +47,12 @@ public class WeaponManager : MonoBehaviour
     }
     public void Control()
     {
+        Debug.DrawRay(_shootPoint.position, _shootPoint.forward, Color.red);
         _currentState.Update(this);
 
-        if (_inputObserver.GetInput("Attack") && _ammo != 0) SwitchState(_shooting);
-        else if (_ammo == 0) SwitchState(_reloading);
-        else SwitchState(_idle);
+        if (_inputObserver.GetInput("Attack") && _currentState == _idle) SwitchState(_shooting);
+        if (_ammo == 0 || _inputObserver.GetInput("Reload")) SwitchState(_reloading);
+        if (_currentState != _reloading && !_inputObserver.GetInput("Attack")) SwitchState(_idle);
     }
     public void SetAnimation(string animationName, bool state)
     {
@@ -75,9 +72,9 @@ public class WeaponManager : MonoBehaviour
     }
     public void EndReloading()
     {
-        Debug.Log("Ивент сработал");
         SetAnimation("Reloading", false);
         _ammo = 30;
+        _textMesh.text = _ammo.ToString();
         SwitchState(_idle);
     }
     public void Shoot()
@@ -86,11 +83,21 @@ public class WeaponManager : MonoBehaviour
         if (_inputObserver.GetInput("Attack"))
         {            
             _shootCoroutine = StartCoroutine(Shooting());
+            RayCastShoot();
+        }
+    }
+    public void RayCastShoot()
+    {
+        Ray ray = new Ray(_shootPoint.position, _shootPoint.forward);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 50f))
+        {
+            _poolObjects.ActivePool(hit.point, Quaternion.LookRotation(ray.direction, hit.normal));
         }
     }
     private IEnumerator Shooting()
     {
-        _spawnPoint.transform.localRotation = Quaternion.Euler(Random.Range(0, 180), _spawnPointLclRot.y, _spawnPointLclRot.z);
+        _effectSpawnPoint.transform.localRotation = Quaternion.Euler(Random.Range(0, 180), _spawnPointLclRot.y, _spawnPointLclRot.z);
         _spawnedEffect.SetActive(true);
         _ammo--;
         _textMesh.text = _ammo.ToString();
@@ -101,5 +108,5 @@ public class WeaponManager : MonoBehaviour
         _shootCoroutine = null;
         
         yield break;
-    }
+    }    
 }

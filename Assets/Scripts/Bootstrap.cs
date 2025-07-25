@@ -12,10 +12,10 @@ public class Bootstrap : MonoBehaviour
     private InputSystem_Actions _inputSystem;
     private Sounds _sounds;
     [SerializeField] private GameObject _weapon;
-    [SerializeField] private Rigidbody _playerRigidbody;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _player;
     [SerializeField] float _lookSpeed = 0.5f;
+    [SerializeField] private PoolObjects _poolObjects;
     private CharacterController _controller;
 
     private void Awake()
@@ -36,11 +36,13 @@ public class Bootstrap : MonoBehaviour
         _playerInputObserver.Init(_inputSystem);
         _fovControl.Init(_mainCamera);        
         _sounds.Init(GetComponent<AudioSource>());
-        _weaponManager.Init(_playerInputObserver, _inputSystem, _sounds, _mainCamera, _fovControl);
+        _weaponManager.Init(_playerInputObserver, _sounds, _fovControl, _poolObjects);
         _playerControl.Init(_cameraMoving, _playerMoving);
+        _poolObjects.CreatePool();
     }
     private void Update()
     {
+        
         _weaponManager.Control();
         _playerInputObserver.CheckInput();
         _fovControl.UpdateFOV();
