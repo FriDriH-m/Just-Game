@@ -33,7 +33,7 @@ public class WeaponManager : MonoBehaviour
         _inputObserver = inpputObserver;
         _sounds = sounds;
         _spawnPointLclRot = _effectSpawnPoint.localRotation.eulerAngles;
-        _spawnedEffect = Instantiate(_effects, _effectSpawnPoint.position, _effectSpawnPoint.rotation, _effectSpawnPoint);
+        _spawnedEffect = _effects;
         _spawnedEffect.SetActive(false);
         _currentState = _idle;
         _ammo = 30;
@@ -90,8 +90,15 @@ public class WeaponManager : MonoBehaviour
     {
         Ray ray = new Ray(_shootPoint.position, _shootPoint.forward);
         RaycastHit hit;
+        IReactable interactiveObject;
+
         if (Physics.Raycast(ray, out hit, 50f))
         {
+            interactiveObject = hit.collider.GetComponent<IReactable>();
+            if (interactiveObject != null )
+            {
+                interactiveObject.DoReaction();
+            }
             _poolObjects.ActivePool(ray, hit);
         }
     }
