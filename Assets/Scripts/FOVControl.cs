@@ -30,8 +30,7 @@ public class FOVControl
     }
 
     public void UpdateFOV()
-    {
-        
+    {        
         _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, _targetFOV, Time.deltaTime * 15);
     }
 }

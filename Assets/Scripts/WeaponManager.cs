@@ -82,7 +82,6 @@ public class WeaponManager : MonoBehaviour
             return;
         }
         if (_shootCoroutine != null) return;
-        else Debug.Log("Не нулл");
         
         if (_inputObserver.GetInput("Attack"))
         {
@@ -109,7 +108,7 @@ public class WeaponManager : MonoBehaviour
             {
                 interactiveObject.DoReaction();
             }
-            _poolObjects.ActivePool(ray, hit);
+            _poolObjects.ActiveFromPool(ray, hit);
         }
     }
     private IEnumerator Shooting()

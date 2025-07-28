@@ -28,7 +28,7 @@ public class PoolObjects : MonoBehaviour
         }
     }
 
-    public void ActivePool(Ray ray, RaycastHit hit)
+    public void ActiveFromPool(Ray ray, RaycastHit hit)
     {
         Vector3 position = hit.point;
         Quaternion quaternion = Quaternion.LookRotation(ray.direction, hit.normal);
