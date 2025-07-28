@@ -5,8 +5,12 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _weapon;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _player;
-    [SerializeField] float _lookSpeed = 0.5f;
+    [SerializeField] private float _lookSpeed = 0.5f;
     [SerializeField] private PoolObjects _poolObjects;
+    //------------For Flashlight---------------
+    [SerializeField] private Flashlight _flashlight;
+    [SerializeField] private GameObject _light;
+    //-----------------------------------------
     private IPlayerMove _playerMoving;
     private ICameraMove _cameraMoving;
     private PlayerControl _playerControl;
@@ -31,13 +35,17 @@ public class Bootstrap : MonoBehaviour
         _playerMoving = new PlayerMoving(_inputSystem, _mainCamera, _controller, _player, _fovControl);        
         
         _playerInputObserver = new PlayerInputObserver();
-                
+
         _playerInputObserver.Initialize(_inputSystem);
         _fovControl.Initialize(_mainCamera);        
         _sounds.Initialize(GetComponent<AudioSource>());
         _weaponManager.Initialize(_playerInputObserver, _sounds, _fovControl, _poolObjects);
         _playerControl.Initialize(_cameraMoving, _playerMoving);
         _poolObjects.CreatePool();
+
+        //------------For Flashlight---------------
+        _flashlight.Initialize(_playerInputObserver, _light);
+        //-----------------------------------------
     }
     private void Update()
     {        
