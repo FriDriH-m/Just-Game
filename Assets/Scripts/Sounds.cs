@@ -6,7 +6,7 @@ public class Sounds : MonoBehaviour
     [SerializeField] private AudioClip[] _sounds;
     AudioSource _audioSource;
 
-    public void Init(AudioSource audioSource)
+    public void Initialize(AudioSource audioSource)
     {
         _audioSource = audioSource;
     }   

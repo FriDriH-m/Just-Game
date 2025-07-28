@@ -12,6 +12,7 @@ public class WeaponManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _textMesh;
 
     private PoolObjects _poolObjects;    
+    private StateSwitcher _stateSwitcher;
     private BaseState _currentState;
     private PlayerInputObserver _inputObserver;
     private Sounds _sounds;
@@ -22,11 +23,7 @@ public class WeaponManager : MonoBehaviour
     private Coroutine _shootCoroutine;
     private int _ammo;
 
-    private Idle _idle = new();
-    private Shooting _shooting = new();
-    private Reloading _reloading = new();
-    
-    public void Init(PlayerInputObserver inpputObserver, Sounds sounds, FOVControl fovControl, PoolObjects poolObjects)
+    public void Initialize(PlayerInputObserver inpputObserver, Sounds sounds, FOVControl fovControl, PoolObjects poolObjects)
     {
         _poolObjects = poolObjects;
         _fovControl = fovControl;
@@ -35,24 +32,22 @@ public class WeaponManager : MonoBehaviour
         _spawnPointLclRot = _effectSpawnPoint.localRotation.eulerAngles;
         _spawnedEffect = _effects;
         _spawnedEffect.SetActive(false);
-        _currentState = _idle;
         _ammo = 30;
+        _stateSwitcher = new StateSwitcher(this);
     }
     public void SwitchState(BaseState newState)
     {
         if (_currentState != null) _currentState.Exit(this);
-
         _currentState = newState;
         _currentState.Enter(this);
     }
     public void Control()
     {
-        Debug.DrawRay(_shootPoint.position, _shootPoint.forward, Color.red);
         _currentState.Update(this);
-
-        if (_inputObserver.GetInput("Attack") && _currentState == _idle) SwitchState(_shooting);
-        if (_ammo == 0 || _inputObserver.GetInput("Reload")) SwitchState(_reloading);
-        if (_currentState != _reloading && !_inputObserver.GetInput("Attack")) SwitchState(_idle);
+        if (_ammo == 0)
+        {
+            _stateSwitcher.RequestStateChange(StateType.Reloading);
+        }
     }
     public void SetAnimation(string animationName, bool state)
     {
@@ -75,15 +70,30 @@ public class WeaponManager : MonoBehaviour
         SetAnimation("Reloading", false);
         _ammo = 30;
         _textMesh.text = _ammo.ToString();
-        SwitchState(_idle);
+        _stateSwitcher.RemoveState(StateType.Reloading);
+        _stateSwitcher.RequestStateChange(StateType.Idle);
+        
     }
     public void Shoot()
-    {  
+    {
+        if (_inputObserver.GetInput("Reload"))
+        {
+            _stateSwitcher.RequestStateChange(StateType.Reloading);
+            return;
+        }
         if (_shootCoroutine != null) return;
+        else Debug.Log("Не нулл");
+        
         if (_inputObserver.GetInput("Attack"))
-        {            
+        {
+            _stateSwitcher.RequestStateChange(StateType.Shooting);
             _shootCoroutine = StartCoroutine(Shooting());
             RayCastShoot();
+        }
+        else
+        {
+            _stateSwitcher.RemoveState(StateType.Shooting);
+            _stateSwitcher.RequestStateChange(StateType.Idle);
         }
     }
     public void RayCastShoot()
@@ -113,7 +123,12 @@ public class WeaponManager : MonoBehaviour
         yield return new WaitForSeconds(0.11f);
         _spawnedEffect.SetActive(false);        
         _shootCoroutine = null;
-        
+        _stateSwitcher.RemoveState(StateType.Shooting);
+
         yield break;
-    }    
+    }
+    private void Update()
+    {
+        //_stateSwitcher.SeeStates();
+    }
 }

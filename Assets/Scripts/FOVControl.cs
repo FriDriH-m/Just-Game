@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class FOVControl 
 {
+    private enum FOVType
+    {
+        Default, Aiming, Running
+    }
     private Camera _camera;
     private Dictionary<string, int> _allowedFOV;
     private int _targetFOV = 60;
+    private FOVType _type;
+    
 
-    public void Init(Camera camera)
+    public void Initialize(Camera camera)
     {
         _camera = camera;
         _allowedFOV = new Dictionary<string, int>

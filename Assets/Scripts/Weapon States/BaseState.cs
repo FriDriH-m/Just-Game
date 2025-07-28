@@ -32,6 +32,7 @@ public class Shooting : BaseState
     }
     public void Exit(WeaponManager manager)
     {
+        Debug.Log("Exit from Shooting state");
         manager.SetAnimation("Shoot", false);
     }
     public void Update(WeaponManager manager)
@@ -44,7 +45,6 @@ public class Reloading : BaseState
 {
     public void Enter(WeaponManager manager)
     {
-        Debug.Log("Reloading");
         manager.SetAnimation("Reloading", true);
     }
     public void Exit(WeaponManager manager)

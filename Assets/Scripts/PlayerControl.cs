@@ -113,7 +113,7 @@ public class PlayerControl : MonoBehaviour
     ICameraMove cameraMove;
     IPlayerMove playerMove;
 
-    public void Init(ICameraMove cameraMove, IPlayerMove playerMove)
+    public void Initialize(ICameraMove cameraMove, IPlayerMove playerMove)
     {
         this.cameraMove = cameraMove;
         this.playerMove = playerMove;

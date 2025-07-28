@@ -904,7 +904,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: -0.85, z: 0.95}
+  m_Center: {x: 0, y: -0.85, z: -0.01}
 --- !u!65 &233844562
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3791,15 +3791,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -4216859302048453862, guid: 03f0313d06795894e85c89bfc12f42e9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 17.34
+      value: 17.341
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 03f0313d06795894e85c89bfc12f42e9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.23
+      value: 2.18
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 03f0313d06795894e85c89bfc12f42e9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 21.56
+      value: 21.559
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 03f0313d06795894e85c89bfc12f42e9, type: 3}
       propertyPath: m_LocalRotation.w

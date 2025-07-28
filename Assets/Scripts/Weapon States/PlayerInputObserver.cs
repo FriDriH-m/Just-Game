@@ -7,7 +7,7 @@ public class PlayerInputObserver
     private InputSystem_Actions _inputSystem;
     private InputActionMap _inputActionMap;
     private List<string> _inputs;
-    public void Init(InputSystem_Actions input)
+    public void Initialize(InputSystem_Actions input)
     {
         _inputSystem = input;
         _inputSystem.Enable();
