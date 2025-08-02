@@ -11,6 +11,7 @@ public class Idle : BaseState
 {
     public void Enter(WeaponManager manager)
     {
+        
     }
     public void Exit(WeaponManager manager)
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Target : MonoBehaviour, IReactable
+public class Target : MonoBehaviour, IShootReaction
 {
     private float _xRangeValue;
     private float _yRangeValue;

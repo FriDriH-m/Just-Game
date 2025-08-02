@@ -50,7 +50,7 @@ public class PlayerMoving : IPlayerMove
     private FOVControl _fovControl;
     private GameObject _player;
     private bool _isGrounded;
-    private float force = 30f;
+    private float force = 25f;
     private bool _isJumping = false;
     public PlayerMoving(InputSystem_Actions inputSystem, Camera camera, CharacterController controller, GameObject player, FOVControl fovControl)
     {

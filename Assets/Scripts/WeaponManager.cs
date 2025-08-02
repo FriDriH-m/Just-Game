@@ -23,17 +23,18 @@ public class WeaponManager : MonoBehaviour
     private Coroutine _shootCoroutine;
     private int _ammo;
 
-    public void Initialize(PlayerInputObserver inpputObserver, Sounds sounds, FOVControl fovControl, PoolObjects poolObjects)
+    public void Initialize(Sounds sounds, FOVControl fovControl, PoolObjects poolObjects)
     {
         _poolObjects = poolObjects;
         _fovControl = fovControl;
-        _inputObserver = inpputObserver;
+        _inputObserver = PlayerInputObserver.Instance;
         _sounds = sounds;
         _spawnPointLclRot = _effectSpawnPoint.localRotation.eulerAngles;
         _spawnedEffect = _effects;
         _spawnedEffect.SetActive(false);
         _ammo = 30;
         _stateSwitcher = new StateSwitcher(this);
+        _inputObserver.SubscribeToEvent(Shoot, "Attack");
     }
     public void SwitchState(BaseState newState)
     {
@@ -55,6 +56,7 @@ public class WeaponManager : MonoBehaviour
     }
     public void Aiming()
     {        
+
         if (_inputObserver.GetInput("Aim"))
         {
             _fovControl.SetTargetFOW("Aiming");
@@ -71,8 +73,7 @@ public class WeaponManager : MonoBehaviour
         _ammo = 30;
         _textMesh.text = _ammo.ToString();
         _stateSwitcher.RemoveState(StateType.Reloading);
-        _stateSwitcher.RequestStateChange(StateType.Idle);
-        
+        _stateSwitcher.RequestStateChange(StateType.Idle);        
     }
     public void Shoot()
     {
@@ -82,7 +83,7 @@ public class WeaponManager : MonoBehaviour
             return;
         }
         if (_shootCoroutine != null) return;
-        
+
         if (_inputObserver.GetInput("Attack"))
         {
             _stateSwitcher.RequestStateChange(StateType.Shooting);
@@ -99,11 +100,11 @@ public class WeaponManager : MonoBehaviour
     {
         Ray ray = new Ray(_shootPoint.position, _shootPoint.forward);
         RaycastHit hit;
-        IReactable interactiveObject;
+        IShootReaction interactiveObject;
 
         if (Physics.Raycast(ray, out hit, 50f))
         {
-            interactiveObject = hit.collider.GetComponent<IReactable>();
+            interactiveObject = hit.collider.GetComponent<IShootReaction>();
             if (interactiveObject != null )
             {
                 interactiveObject.DoReaction();
