@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Target : MonoBehaviour, IShootReaction
 {
+    [SerializeField] private Display _display;
     private float _xRangeValue;
     private float _yRangeValue;
     private float _yRange
@@ -18,6 +19,7 @@ public class Target : MonoBehaviour, IShootReaction
 
     public void DoReaction()
     {
+        _display.UpScore();
         _yRange = Random.Range(1f, 5f);
         _xRange = Random.Range(2f, 27f);
         transform.position = new Vector3(_xRange, _yRange, transform.position.z);
