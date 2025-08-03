@@ -17,6 +17,7 @@ public class CameraLook
 
         if (Physics.Raycast(ray, out hit))
         {
+            if (hit.distance > 3f) return; 
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();           
 
             if (interactable != null && interactable != _currentInteractable)

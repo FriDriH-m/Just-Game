@@ -79,6 +79,7 @@ public class PlayerMoving : IPlayerMove
 
     public void Gravity()
     {
+        _isGrounded = _controller.isGrounded;
         if (!_isJumping)
         {
             Vector3 gravity = new Vector3(0, -9.81f, 0) * Time.deltaTime;
@@ -100,6 +101,7 @@ public class PlayerMoving : IPlayerMove
         float smoothing = 0f;
         for (int i = 0; i < force * 2; i++)
         {
+            
             _controller.Move(Vector3.up * (force - smoothing) * Time.deltaTime);
             smoothing += 1f;
             yield return new WaitForSeconds(0.01f);

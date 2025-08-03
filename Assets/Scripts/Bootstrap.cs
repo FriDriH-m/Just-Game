@@ -7,10 +7,6 @@ public class Bootstrap : MonoBehaviour
     [SerializeField] private GameObject _player;
     [SerializeField] private float _lookSpeed = 0.5f;
     [SerializeField] private PoolObjects _poolObjects;
-    //------------For Flashlight---------------
-    [SerializeField] private Flashlight _flashlight;
-    [SerializeField] private GameObject _light;
-    //-----------------------------------------
     //------------For CameraLook---------------
     private CameraLook _cameraLook;
     //-----------------------------------------
@@ -47,9 +43,6 @@ public class Bootstrap : MonoBehaviour
         _playerControl.Initialize(_cameraMoving, _playerMoving);
         _poolObjects.CreatePool();
 
-        //------------For Flashlight---------------
-        _flashlight.Initialize(_light);
-        //-----------------------------------------
         //------------For CameraLook---------------
         _cameraLook.Initialize(_mainCamera);
         //-----------------------------------------

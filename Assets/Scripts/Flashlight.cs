@@ -19,33 +19,24 @@ public interface IInteractable
 public class Flashlight : MonoBehaviour, IInputReaction, IInteractable
 {
     [SerializeField] private Transform _targetPoint;
-    [SerializeField] private GameObject _takeObjectCanvas;
+    [SerializeField] private GameObject _light;
+    [SerializeField] private Outline _outline;
     private PlayerInputObserver _inputObserver;
-    private GameObject _light;
-    private bool _inHand = false;
-    
-    public void Initialize(GameObject light)
-    {
-        _light = light;
-        _inputObserver = PlayerInputObserver.Instance; 
-    }
     public void Interact(Ray ray, RaycastHit hit)
     {      
-        _takeObjectCanvas.SetActive(true);
-        _takeObjectCanvas.transform.position = hit.point - ray.direction * 0.5f;
-        _takeObjectCanvas.transform.rotation = Quaternion.LookRotation(ray.direction, Vector3.up);
+        if (_inputObserver == null) _inputObserver = PlayerInputObserver.Instance;
+        _outline.enabled = true;
         _inputObserver.SubscribeToEvent(TakeObject, "Next");
     }
     public void UnInteract(Ray ray, RaycastHit hit)
     {
-        _takeObjectCanvas.SetActive(false);
+        _outline.enabled = false;
         _inputObserver.UnsubscribeFromEvent(TakeObject, "Next");
     }
 
     public void TakeObject()
     {
-        if (_inHand) return;
-        _inHand = true;
+        _outline.enabled = false;
 
         // настройка объекта
         transform.GetComponent<Rigidbody>().isKinematic = true;
@@ -61,8 +52,6 @@ public class Flashlight : MonoBehaviour, IInputReaction, IInteractable
     }
     public void DiscardObject()
     {
-        if (!_inHand) return;
-        _inHand = false;
         
         transform.parent = null;
         transform.GetComponent<Rigidbody>().isKinematic = false;
