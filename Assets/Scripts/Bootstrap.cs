@@ -46,6 +46,7 @@ public class Bootstrap : MonoBehaviour
         //------------For CameraLook---------------
         _cameraLook.Initialize(_mainCamera);
         //-----------------------------------------
+
 }
 private void Update()
     {        

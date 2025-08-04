@@ -1,10 +1,15 @@
 using UnityEngine;
+using System;
 
 public class Target : MonoBehaviour, IShootReaction
 {
-    [SerializeField] private Display _display;
+    private TrainingObserver _observer;
     private float _xRangeValue;
     private float _yRangeValue;
+    public void Init(TrainingObserver observer)
+    {
+        _observer = observer;
+    }
     private float _yRange
     {
         get => _yRangeValue;
@@ -16,12 +21,15 @@ public class Target : MonoBehaviour, IShootReaction
         get => _xRangeValue;
         set => _xRangeValue = Mathf.Clamp(value, 2f, 26f);
     }
-
+    public void ActiveTarget(bool mode)
+    {
+        transform.gameObject.SetActive(mode);
+    }
     public void DoReaction()
     {
-        _display.UpScore();
-        _yRange = Random.Range(1f, 5f);
-        _xRange = Random.Range(2f, 27f);
+        _observer.HitTarget?.Invoke();
+        _yRange = UnityEngine.Random.Range(1f, 5f);
+        _xRange = UnityEngine.Random.Range(2f, 27f);
         transform.position = new Vector3(_xRange, _yRange, transform.position.z);
     }
 }
