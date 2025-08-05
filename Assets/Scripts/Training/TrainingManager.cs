@@ -45,4 +45,10 @@ public class TrainingManager : MonoBehaviour
             _gameIsActive = false;
         }
     }
+    private void OnDestroy()
+    {
+        _trainingObserver.StartGame -= StartGame;
+        _trainingObserver.StopGame -= StopGame;
+        _trainingObserver.HitTarget -= _counter.AddScore;
+    }
 }
