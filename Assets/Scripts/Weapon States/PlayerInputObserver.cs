@@ -32,9 +32,9 @@ public class PlayerInputObserver
                                                                                   * параметр InputAction.CallbackContext в метод
                                                                                  */
                 _subscribes[$"{func.Method.Name}-{nameOfInput}-{func.Target?.GetHashCode()}"] = _method;
-                // регистрируем метод в словаре для последующей отписки (храним имя метода, имя события, на которое пописываемя, объект, которому принадлежит метод)
+                // регистрируем метод в словаре для последующей отписки (храним имя метода, имя события, на которое пописываемcя, объект, которому принадлежит метод)
                 
-                action.performed += _method;
+                action.started += _method;
             }
         }
     }
@@ -46,7 +46,7 @@ public class PlayerInputObserver
             if (action.name == nameOfInput)
             {
                 Action<InputAction.CallbackContext> _method = _subscribes[$"{func.Method.Name}-{nameOfInput}-{func.Target.GetHashCode()}"];
-                action.performed -= _method;
+                action.started -= _method;
             }
         }
     }

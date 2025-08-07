@@ -3,6 +3,7 @@ using System;
 
 public class Target : MonoBehaviour, IShootReaction
 {
+    [SerializeField] private GameObject _persona;
     private TrainingObserver _observer;
     private float _xRangeValue;
     private float _yRangeValue;
@@ -23,10 +24,12 @@ public class Target : MonoBehaviour, IShootReaction
     }
     public void ActiveTarget(bool mode)
     {
+        _persona.SetActive(mode);
         transform.gameObject.SetActive(mode);
     }
     public void DoReaction()
     {
+        _persona.GetComponent<Animator>().SetTrigger("SeeMuscles");
         _observer.HitTarget?.Invoke();
         _yRange = UnityEngine.Random.Range(1f, 5f);
         _xRange = UnityEngine.Random.Range(2f, 27f);

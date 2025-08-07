@@ -4,7 +4,6 @@ using System.Collections;
 
 public class WeaponManager : MonoBehaviour
 {    
-    [SerializeField] private Transform _aimPoint;
     [SerializeField] private GameObject _effects;
     [SerializeField] private Transform _effectSpawnPoint;
     [SerializeField] private Transform _shootPoint;

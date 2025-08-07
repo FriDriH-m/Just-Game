@@ -31,8 +31,7 @@ public class Bootstrap : MonoBehaviour
         _inputSystem = new InputSystem_Actions();
         _fovControl = new FOVControl();
         _inputSystem.Enable();
-        _cameraMoving = new CameraMoving(_mainCamera, _player.transform, _lookSpeed, _inputSystem);
-        _playerMoving = new PlayerMoving(_inputSystem, _mainCamera, _controller, _player, _fovControl);        
+             
         
         _playerInputObserver = new PlayerInputObserver();
 
@@ -46,16 +45,18 @@ public class Bootstrap : MonoBehaviour
         //------------For CameraLook---------------
         _cameraLook.Initialize(_mainCamera);
         //-----------------------------------------
+        _cameraMoving = new CameraMoving(_mainCamera, _player.transform, _lookSpeed, _inputSystem);
+        _playerMoving = new PlayerMoving(_inputSystem, _controller, _player, _fovControl, _playerControl);
 
-}
-private void Update()
+    }
+    private void Update()
     {        
         _weaponManager.Control();
         _playerInputObserver.CheckInput();
         _fovControl.UpdateFOV();
         _cameraMoving.CameraMove();
         _playerMoving.OnMove();
-        _playerMoving.Jump(this);
+        //_playerMoving.Jump();
         _playerMoving.Gravity();
         _cameraLook.CameraLooking();
     }
