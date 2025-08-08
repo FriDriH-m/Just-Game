@@ -43,6 +43,7 @@ public class PoolObjects : MonoBehaviour
 
         poolObject.transform.position = position;
         poolObject.transform.rotation = quaternion;
+        poolObject.transform.parent = hit.transform;
         poolObject.SetActive(true);
     }
 }

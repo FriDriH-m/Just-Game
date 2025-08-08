@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] private NavMeshAgent _agent;
-    private Transform _target;
+    private Vector3 _target;
     private EnemyBaseState _currentState;
     public Agro _agro { get; private set; }
     public Attack _attack { get; private set; }
@@ -26,12 +26,13 @@ public class EnemyAI : MonoBehaviour
         _currentState = newState;
         _currentState.Enter(this);
     }
-    public void SetTarget(Transform target = null)
+    public void SetTarget(Vector3 target)
     {
         if (target != null)
         {
             _target = target;
-            _agent.SetDestination(target.position);
+            Debug.DrawLine(transform.position, target, Color.red, (_target - transform.position).magnitude);
+            _agent.SetDestination(target);
         }
     }
     public void SetSpeed(float speed)
@@ -40,6 +41,16 @@ public class EnemyAI : MonoBehaviour
     }
     public float ChecDistance()
     {
-        return (_target.position - transform.position).magnitude;
+        return (_target - transform.position).magnitude;
+    }
+    public Vector3 GetRandomPoint()
+    {
+        Vector3 randomPoint = Random.insideUnitSphere * 5f;
+        randomPoint.y = 0f;
+        return randomPoint;
+    }
+    private void Update()
+    {       
+        _currentState.Update(this);        
     }
 }
