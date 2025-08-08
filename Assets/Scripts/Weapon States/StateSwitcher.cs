@@ -9,7 +9,7 @@ public enum StateType
 public class StateSwitcher 
 {
     private List<StateType> _states;
-    private Dictionary<StateType, (BaseState, int)> _prioriteList;
+    private Dictionary<StateType, (IBaseState, int)> _prioriteList;
     private StateType _currentStateType;
     private WeaponManager _weaponManager;
 
@@ -21,7 +21,7 @@ public class StateSwitcher
         _weaponManager = weaponManager;
         _currentStateType = StateType.Idle;
         _weaponManager.SwitchState(_idle);
-        _prioriteList = new Dictionary<StateType, (BaseState, int)>
+        _prioriteList = new Dictionary<StateType, (IBaseState, int)>
         {
             {StateType.Shooting, (_shooting, 1)},
             {StateType.Idle, (_idle, 2) },
@@ -57,8 +57,7 @@ public class StateSwitcher
         }
     }
     public void RemoveState(StateType state)
-    {
-        
+    {        
         _states.Remove(state);
     }
     public void SeeStates()

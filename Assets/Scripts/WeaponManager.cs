@@ -12,7 +12,7 @@ public class WeaponManager : MonoBehaviour
 
     private PoolObjects _poolObjects;    
     private StateSwitcher _stateSwitcher;
-    private BaseState _currentState;
+    private IBaseState _currentState;
     private PlayerInputObserver _inputObserver;
     private Sounds _sounds;
     public FOVControl _fovControl { get; private set; }
@@ -35,7 +35,7 @@ public class WeaponManager : MonoBehaviour
         _stateSwitcher = new StateSwitcher(this);
         _inputObserver.SubscribeToEvent(Shoot, "Attack");
     }
-    public void SwitchState(BaseState newState)
+    public void SwitchState(IBaseState newState)
     {
         if (_currentState != null) _currentState.Exit(this);
         _currentState = newState;

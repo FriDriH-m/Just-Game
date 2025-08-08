@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public interface BaseState
+public interface IBaseState
 {
     public void Enter(WeaponManager manager);
     public void Exit(WeaponManager manager);
     public void Update(WeaponManager manager);
 }
 
-public class Idle : BaseState
+public class Idle : IBaseState
 {
     public void Enter(WeaponManager manager)
     {
@@ -24,7 +24,7 @@ public class Idle : BaseState
     }
 }
 
-public class Shooting : BaseState
+public class Shooting : IBaseState
 {
     public void Enter(WeaponManager manager)
     {
@@ -40,7 +40,7 @@ public class Shooting : BaseState
         manager.Shoot();
     }
 }
-public class Reloading : BaseState
+public class Reloading : IBaseState
 {
     public void Enter(WeaponManager manager)
     {

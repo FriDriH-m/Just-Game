@@ -67,7 +67,7 @@ public class PlayerMoving : IPlayerMove
     public void OnMove()
     {
         _isGrounded = _controller.isGrounded;
-        Debug.Log(_isGrounded);
+        //Debug.Log(_isGrounded);
         _move = _inputSystem.Player.Move.ReadValue<Vector2>();
         if(_move.magnitude > 0.5f )
         {
@@ -81,8 +81,7 @@ public class PlayerMoving : IPlayerMove
     }
 
     public void Gravity()
-    {
-        
+    {        
         if (_jumpCoroutine == null)
         {
             Vector3 gravity = new Vector3(0, -9.81f, 0) * Time.deltaTime;
