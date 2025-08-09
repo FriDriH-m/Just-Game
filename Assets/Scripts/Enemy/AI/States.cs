@@ -20,15 +20,16 @@ public class Patrol : EnemyBaseState
     }
     public override void Update(EnemyAI enemyAI)
     {
-        _timer += Time.deltaTime;
-        if (enemyAI.ChecDistance() <= 5)
+        if (enemyAI.CheckDistance() < 0.1f)
         {
-            enemyAI.SwitchState(enemyAI._agro);
+            enemyAI.SetSpeed(EnemyAI.MoveType.Idle);
         }
+        _timer += Time.deltaTime;
         if (_timer >= 5f)
         {
             Vector3 randomPoint = enemyAI.GetRandomPoint();
             enemyAI.SetTarget(randomPoint);
+            enemyAI.SetSpeed(EnemyAI.MoveType.Walk);
             _timer = 0f;
         }
     }
@@ -52,7 +53,7 @@ public class Agro : EnemyBaseState
 {
     public override void Enter(EnemyAI enemyAI)
     {
-        
+        enemyAI.FindNearilestShelter();
     }
     public override void Exit(EnemyAI enemyAI)
     {
