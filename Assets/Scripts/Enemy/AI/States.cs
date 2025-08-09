@@ -20,7 +20,7 @@ public class Patrol : EnemyBaseState
     }
     public override void Update(EnemyAI enemyAI)
     {
-        if (enemyAI.CheckDistance() < 0.1f)
+        if (enemyAI.CheckDistance() < 0.5f)
         {
             enemyAI.SetSpeed(EnemyAI.MoveType.Idle);
         }
@@ -38,7 +38,8 @@ public class Attack : EnemyBaseState
 {
     public override void Enter(EnemyAI enemyAI)
     {
-
+        enemyAI.SetTarget(enemyAI.Player.position);
+        enemyAI.SetSpeed(EnemyAI.MoveType.Idle);
     }
     public override void Exit(EnemyAI enemyAI)
     {
@@ -46,7 +47,18 @@ public class Attack : EnemyBaseState
     }
     public override void Update(EnemyAI enemyAI)
     {
-
+        float angel = enemyAI.CheckAngle();
+        Debug.Log(angel);
+        if (angel > 1f)
+        {
+            Debug.Log("Поверни");
+            enemyAI.transform.Rotate(0, -2f, 0);
+        }
+        else if (angel < -1f)
+        {
+            Debug.Log("Поверни");
+            enemyAI.transform.Rotate(0, 2f, 0);
+        }
     }
 }
 public class Agro : EnemyBaseState
@@ -61,6 +73,10 @@ public class Agro : EnemyBaseState
     }
     public override void Update(EnemyAI enemyAI)
     {
-
+        if (enemyAI.CheckDistance() < 1f)
+        {
+            enemyAI.SetSpeed(EnemyAI.MoveType.Idle);
+            enemyAI.SwitchState(enemyAI.Attack);
+        }
     }
 }

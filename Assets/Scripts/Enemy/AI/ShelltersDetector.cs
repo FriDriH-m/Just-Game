@@ -2,25 +2,32 @@ using UnityEngine;
 
 public class SheltersDetector : MonoBehaviour
 {
+    EnemyAI _enemyAI;
+    private void Start()
+    {
+        _enemyAI = GetComponentInParent<EnemyAI>();
+        if (_enemyAI == null)
+        {
+            Debug.LogError("EnemyAI component not found on parent object.");
+        }
+    }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Shelter"))
+        if (other.GetComponent<Shelter>())
         {
-            EnemyAI enemyAI = GetComponent<EnemyAI>();
-            if (enemyAI != null)
+            if (_enemyAI != null)
             {
-                enemyAI.DetectShelter(other.transform, true);
+                _enemyAI.DetectShelter(other.transform, true);
             }
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Shelter"))
+        if (other.GetComponent<Shelter>())
         {
-            EnemyAI enemyAI = GetComponent<EnemyAI>();
-            if (enemyAI != null)
+            if (_enemyAI != null)
             {
-                enemyAI.DetectShelter(other.transform, false);
+                _enemyAI.DetectShelter(other.transform, false);
             }
         }
     }

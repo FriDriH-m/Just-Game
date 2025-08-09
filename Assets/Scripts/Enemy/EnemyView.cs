@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class EnemyView : MonoBehaviour
 {
+    EnemyAI _enemyAI;
+    private void Start()
+    {
+        _enemyAI = GetComponentInParent<EnemyAI>();
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            EnemyAI enemyAI = GetComponent<EnemyAI>();
-            if (enemyAI != null)
+            if (_enemyAI != null && _enemyAI.CurrentState == _enemyAI.Patrol)
             {
-                enemyAI.SwitchState(enemyAI._agro);
-            }
+                _enemyAI.SwitchState(_enemyAI.Agro);
+            } 
         }
     }
 }
